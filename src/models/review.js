@@ -15,18 +15,17 @@ var ReviewSchema = new mongoose.Schema({
             ref: 'User'
             },
     postedOn: {
-      type: String,
-      required: true,
-      trim: true
+      type: Date,
+      default: Date.now
     },
     rating: {
-      type: String,
-      required: true,
-      trim: true
+      type: Number,
+      min: 1,
+      max: 5,
+      required: true
     },
     review: {
-      type: String,
-      required: true
+      type: String
     }
 });
 

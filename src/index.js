@@ -18,6 +18,16 @@ var db = mongoose.connection;
 // mongo error
 db.on('error', console.error.bind(console, 'connection error:'));
 
+// use sessions for tracking logins
+app.use(session({
+  secret: 'mayonaise is fattening',
+  resave: true,
+  saveUninitialized: false,
+  store: new MongoStore({
+    mongooseConnection: db
+  })
+}));
+
 // set our port
 app.set('port', process.env.PORT || 5000);
 

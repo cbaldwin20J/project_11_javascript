@@ -3,6 +3,10 @@ var router = express.Router();
 var User = require('../models/user');
 var Course = require('../models/course');
 var Review = require('../models/review');
+var auth = require('basic-auth')
+var mid = require('../middleware');
+
+
 
 
 
@@ -13,9 +17,9 @@ var Review = require('../models/review');
 
 // GET /api/users 200 - Returns the currently authenticated user
 
-router.get('/users', function(req, res, next) {
+router.get('/users', mid.requiresLogin, function(req, res, next) {
   // if the user is logged in I guess
-  User.findById(req.session.userId)
+  User.findById(req.locals.userId)
       .exec(function (error, user) {
         if (error) {
           return next(error);
@@ -66,7 +70,7 @@ router.get("/course/:courseId", function(req, res, next) {
 
 // POST /api/courses 201 - Creates a course, sets the Location header, and returns no content
 // ********* works
-router.post("/courses", function(req, res,next){
+router.post("/courses", mid.requiresLogin, function(req, res,next){
 
   let new_course = new Course(req.body)
 
@@ -79,7 +83,7 @@ router.post("/courses", function(req, res,next){
 
 // PUT /api/courses/:courseId 204 - Updates a course and returns no content
 // ********* works
-router.post("/courses/:courseId", function(req, res,next){
+router.post("/courses/:courseId", mid.requiresLogin, function(req, res,next){
   Course.findById(req.params.courseId)
     .exec(function (error, course_to_update) {
           if (error) {
@@ -100,7 +104,7 @@ router.post("/courses/:courseId", function(req, res,next){
 
 // POST /api/courses/:courseId/reviews 201 - Creates a review for the specified course ID, sets the Location header to the related course, and returns no content
 // ********* works
-router.post("/courses/:courseId/reviews", function(req, res,next){
+router.post("/courses/:courseId/reviews", mid.requiresLogin, function(req, res,next){
   Course.findById(req.params.courseId)
     .exec(function (error, course) {
           if (error) {
@@ -131,9 +135,8 @@ module.exports = router;
 
 ****For creating a User
 {
-  "email": "john@gmail.com",
-  "name": "John Labowski",
-  "favoriteBook": "The Bible",
+  "fullName": "John Labowski",
+  "emailAddress": "john@gmail.com",
   "password": "BigJ#$@"
 }
 
@@ -147,11 +150,11 @@ module.exports = router;
 }
 
 ****For creating a Review
+      left out postedOn because it has a default
       can send it to the course with id of 5c6eef9cd5a78ff6a85c52c8
 {
   "user": "57029ed4795118be119cc437",
-  "postedOn": "2/21/2019",
-  "rating": "5 stars",
+  "rating": "4",
   "review": "I learnt a lot from this class"
 }
 

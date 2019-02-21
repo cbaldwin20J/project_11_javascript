@@ -10,28 +10,29 @@ User
 var mongoose = require('mongoose');
 var bcrypt = require('bcrypt');
 var UserSchema = new mongoose.Schema({
-    email: {
+    fullName: {
       type: String,
+      required: true,
+      trim: true
+    },
+    emailAddress: {
+      type: String,
+      required: true,
       unique: true,
-      required: true,
-      trim: true
-    },
-    name: {
-      type: String,
-      required: true,
-      trim: true
-    },
-    favoriteBook: {
-      type: String,
-      required: true,
-      trim: true
+      trim: true,
+      validate: {
+            validator: function(email_input) {
+              return /^([\w-\.]+@([\w-]+\.)+[\w-]{2,4})?$/.test(email_input);
+            },
+            message: props => `${props.value} is not a valid email!`
+          },
     },
     password: {
       type: String,
       required: true
     }
 });
-/*
+
 // authenticate input against database documents
 UserSchema.statics.authenticate = function(email, password, callback) {
   User.findOne({ email: email })
@@ -52,6 +53,8 @@ UserSchema.statics.authenticate = function(email, password, callback) {
         })
       });
 }
+
+
 // hash password before saving to database
 UserSchema.pre('save', function(next) {
   var user = this;
@@ -63,7 +66,7 @@ UserSchema.pre('save', function(next) {
     next();
   })
 });
-*/
+
 
 var User = mongoose.model('User', UserSchema);
 module.exports = User;
