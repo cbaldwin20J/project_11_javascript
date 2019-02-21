@@ -19,7 +19,7 @@ var mid = require('../middleware');
 
 router.get('/users', mid.requiresLogin, function(req, res, next) {
   // if the user is logged in I guess
-  User.findById(req.locals.userId)
+  User.findById(req.userId)
       .exec(function (error, user) {
         if (error) {
           return next(error);
