@@ -13,7 +13,7 @@ var MongoStore = require('connect-mongo')(session);
 
 const app = express();
 
-mongoose.connect("mongodb://localhost:27017/project11db");
+mongoose.connect("mongodb://localhost:27017/course-api");
 var db = mongoose.connection;
 // mongo error
 db.on('error', console.error.bind(console, 'connection error:'));
@@ -31,13 +31,10 @@ app.use(bodyParser.urlencoded({ extended: false }));
 
 
 // TODO add additional routes here
+var routes = require('./routes/index');
+app.use('/api', routes);
 
-// send a friendly greeting for the root route
-app.get('/', (req, res) => {
-  res.json({
-    message: 'Welcome to the Course Review API'
-  });
-});
+
 
 // uncomment this route in order to test the global error handler
 // app.get('/error', function (req, res) {
