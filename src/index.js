@@ -6,10 +6,7 @@ const morgan = require('morgan');
 
 var bodyParser = require('body-parser');
 var mongoose = require('mongoose');
-var session = require('express-session');
-// this will allow Mongo to hold the session instead of the server. Makes it much easier
-// for the server to not hold all that memory.
-var MongoStore = require('connect-mongo')(session);
+
 
 const app = express();
 
@@ -18,15 +15,7 @@ var db = mongoose.connection;
 // mongo error
 db.on('error', console.error.bind(console, 'connection error:'));
 
-// use sessions for tracking logins
-app.use(session({
-  secret: 'mayonaise is fattening',
-  resave: true,
-  saveUninitialized: false,
-  store: new MongoStore({
-    mongooseConnection: db
-  })
-}));
+
 
 // set our port
 app.set('port', process.env.PORT || 5000);

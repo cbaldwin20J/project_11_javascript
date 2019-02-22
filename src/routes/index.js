@@ -32,12 +32,13 @@ router.get('/users', mid.requiresLogin, function(req, res, next) {
 // POST /api/users 201 - Creates a user, sets the Location header to "/", and returns no content
 // *******works
 router.post('/users', function(req, res, next) {
-  let new_user = new User(req.body)
-  new_user.save(function(err, user){
-    if(err) return next(err);
-    res.status(201);
-    res.json(user);
-  });
+
+  User.create(req.body, function (err, user) {
+        if(err) return next(err);
+        res.status(201);
+        res.json(user);
+      });
+
 })
 
 
@@ -55,7 +56,7 @@ router.get("/courses", function(req, res, next){
 // GET /api/course/:courseId 200 - Returns all Course properties and related documents for the provided course ID
 // When returning a single course for the GET /api/courses/:courseId route, use Mongoose population to load the related user and reviews documents.
 // ********* works
-router.get("/course/:courseId", function(req, res, next) {
+router.get("/courses/:courseId", function(req, res, next) {
   Course.
     findById(req.params.courseId).
     populate('user').
@@ -83,13 +84,19 @@ router.post("/courses", mid.requiresLogin, function(req, res,next){
 
 // PUT /api/courses/:courseId 204 - Updates a course and returns no content
 // ********* works
-router.post("/courses/:courseId", mid.requiresLogin, function(req, res,next){
+router.put("/courses/:courseId", mid.requiresLogin, function(req, res,next){
+  console.log("******************* the req.params.courseId: " + req.params.courseId)
   Course.findById(req.params.courseId)
     .exec(function (error, course_to_update) {
           if (error) {
             return next(error);
-          } else {
-
+          } else if (!course_to_update) {
+              console.log("************************* ran the else if")
+              var the_err = new Error('Course not found with id of ' + req.params.courseId);
+              the_err.status = 401;
+              return next(the_err);
+          }else {
+              console.log("****************** course_to_update: " + JSON.stringify(course_to_update))
               course_to_update.update(req.body, function(err, updated_course){
                 if(err) return next(err);
                 res.json(updated_course);

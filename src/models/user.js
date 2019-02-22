@@ -9,6 +9,9 @@ User
 
 var mongoose = require('mongoose');
 var bcrypt = require('bcrypt');
+var uniqueValidator = require('mongoose-unique-validator');
+
+
 var UserSchema = new mongoose.Schema({
     fullName: {
       type: String,
@@ -25,13 +28,15 @@ var UserSchema = new mongoose.Schema({
               return /^([\w-\.]+@([\w-]+\.)+[\w-]{2,4})?$/.test(email_input);
             },
             message: props => `${props.value} is not a valid email!`
-          },
+          }
     },
     password: {
       type: String,
       required: true
     }
 });
+
+UserSchema.plugin(uniqueValidator);
 
 // authenticate input against database documents
 UserSchema.statics.authenticate = function(email, password, callback) {
@@ -40,16 +45,20 @@ UserSchema.statics.authenticate = function(email, password, callback) {
       .exec(function (error, user) {
         console.log("************the user in user.js: " + JSON.stringify(user))
         if (error) {
+          console.log("************there was an error")
           return callback(error);
         } else if ( !user ) {
+          console.log("************there is no user")
           var err = new Error('User not found.');
           err.status = 401;
           return callback(err);
         }
+        console.log("**************do the passwords match: " + Object.is(password, user.password))
         bcrypt.compare(password, user.password , function(error, result) {
           if (result === true) {
             return callback(null, user);
           } else {
+            console.log("************passwords didn't match")
             return callback();
           }
         })

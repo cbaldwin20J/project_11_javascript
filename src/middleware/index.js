@@ -6,7 +6,7 @@ var User = require('../models/user');
 function requiresLogin(req, res, next) {
 	var user = auth(req)
 	console.log("****************user: " + JSON.stringify(user))
-	if (user.name && user.pass) {
+	if (user && user.name && user.pass) {
 	  User.authenticate(user.name, user.pass, function (error, user) {
 	    if (error || !user) {
 	      var err = new Error('Wrong email or password.');
