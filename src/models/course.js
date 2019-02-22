@@ -1,19 +1,10 @@
-/*
-Course
-
-    _id (ObjectId, auto-generated)
-    user (_id from the users collection)
-    title (String, required)
-    description (String, required)
-    estimatedTime (String)
-    materialsNeeded (String)
-    steps (Array of objects that include stepNumber (Number), title (String, required) and description (String, required) properties)
-    reviews (Array of ObjectId values, _id values from the reviews collection)
-*/
+// the Course model
 
 var mongoose = require('mongoose');
+// hashes passwords for security
 var bcrypt = require('bcrypt');
 
+// goes inside of our CourseSchema under the 'steps' property
 var StepsSchema = new mongoose.Schema({
     stepNumber: {
       type: Number,

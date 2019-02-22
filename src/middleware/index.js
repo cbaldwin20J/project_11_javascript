@@ -1,18 +1,22 @@
+// middleware to require login credentials to access and post to specified content
 
+// gets the login credentials from POSTMANs basic auth
 var auth = require('basic-auth')
 var User = require('../models/user');
 
 
 function requiresLogin(req, res, next) {
+	// gets the 'name' and 'pass' from POSTMANs basic auth credentials
 	var user = auth(req)
-	console.log("****************user: " + JSON.stringify(user))
 	if (user && user.name && user.pass) {
+	  // .authenticate is our static method we set on the User model
 	  User.authenticate(user.name, user.pass, function (error, user) {
 	    if (error || !user) {
 	      var err = new Error('Wrong email or password.');
 	      err.status = 401;
 	      return next(err);
 	    }  else {
+	      // creating a variable of who is logged in to send to the other routes
 	      req.userId = user._id;
 	      return next();
 	    }
@@ -25,7 +29,3 @@ function requiresLogin(req, res, next) {
 
 }
 module.exports.requiresLogin = requiresLogin;
-
-// password and hashed password for user with email chris@gmail.com
-// Chris!!!
-// $2b$10$vhJQrh0QeAALvQ3y5chL3.mWCUwK7B3xE2piXdAV2a9rFmC70wkRW"

@@ -1,14 +1,8 @@
-/*
-User
-
-    _id (ObjectId, auto-generated)
-    fullName (String, required)
-    emailAddress (String, required, must be unique and in correct format)
-    password (String, required)
-*/
+// the User model
 
 var mongoose = require('mongoose');
 var bcrypt = require('bcrypt');
+// the 'unique: true' wasn't working and this plugin makes it work
 var uniqueValidator = require('mongoose-unique-validator');
 
 
@@ -23,6 +17,7 @@ var UserSchema = new mongoose.Schema({
       required: true,
       unique: true,
       trim: true,
+      // must be a valid email format
       validate: {
             validator: function(email_input) {
               return /^([\w-\.]+@([\w-]+\.)+[\w-]{2,4})?$/.test(email_input);
@@ -36,29 +31,26 @@ var UserSchema = new mongoose.Schema({
     }
 });
 
+// reinforces that the 'unique: true' will work
 UserSchema.plugin(uniqueValidator);
 
-// authenticate input against database documents
+// will check if the user's login credentials are valid
 UserSchema.statics.authenticate = function(email, password, callback) {
-  console.log("***************passed through email and password: " + email + " -- " + password)
+  // find the user with the same login email
   User.findOne({ emailAddress: email })
       .exec(function (error, user) {
-        console.log("************the user in user.js: " + JSON.stringify(user))
         if (error) {
-          console.log("************there was an error")
           return callback(error);
         } else if ( !user ) {
-          console.log("************there is no user")
           var err = new Error('User not found.');
           err.status = 401;
           return callback(err);
         }
-        console.log("**************do the passwords match: " + Object.is(password, user.password))
+        // compare the hashed passwords to see if they match using bcrypt
         bcrypt.compare(password, user.password , function(error, result) {
           if (result === true) {
             return callback(null, user);
           } else {
-            console.log("************passwords didn't match")
             return callback();
           }
         })
@@ -67,6 +59,7 @@ UserSchema.statics.authenticate = function(email, password, callback) {
 
 
 // hash password before saving to database
+// '.pre('save')' means this will run before a User model is saved
 UserSchema.pre('save', function(next) {
   var user = this;
   bcrypt.hash(user.password, 10, function(err, hash) {

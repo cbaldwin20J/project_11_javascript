@@ -1,15 +1,8 @@
-/*
-Review
-
-    _id (ObjectId, auto-generated)
-    user (_id from the users collection)
-    postedOn (Date, defaults to “now”)
-    rating (Number, required, must fall between “1” and “5”)
-    review (String)
-*/
+// the Review model
 
 var mongoose = require('mongoose');
 var bcrypt = require('bcrypt');
+
 var ReviewSchema = new mongoose.Schema({
     user: {type: mongoose.Schema.Types.ObjectId,
             ref: 'User'
