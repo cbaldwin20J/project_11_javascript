@@ -10,10 +10,19 @@ var mongoose = require('mongoose');
 
 const app = express();
 
-mongoose.connect("mongodb://localhost:27017/course-api");
+mongoose.connect("mongodb://localhost:27017/course-api", {autoReconnect: true}, (err) => {
+    if (!err) {
+    	console.log('********************************MongoDB has connected successfully.')
+    }else{
+    	console.log('********************************could not connect to MongoDB.')
+
+    }
+});
 var db = mongoose.connection;
+
 // mongo error
-db.on('error', console.error.bind(console, 'connection error:'));
+db.on('error', console.error.bind(console, '***************connection error:'));
+
 
 
 

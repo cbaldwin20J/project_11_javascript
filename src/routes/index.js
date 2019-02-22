@@ -35,8 +35,9 @@ router.post('/users', function(req, res, next) {
 
   User.create(req.body, function (err, user) {
         if(err) return next(err);
+        res.location('/')
         res.status(201);
-        res.json(user);
+        res.json()
       });
 
 })
@@ -46,6 +47,7 @@ router.post('/users', function(req, res, next) {
 // ********** works
 router.get("/courses", function(req, res, next){
   Course.find({})
+        .select('title')
         .exec(function(err, courses){
           if(err) return next(err);
           // sending our questions as json objects to the server making the request
@@ -77,8 +79,9 @@ router.post("/courses", mid.requiresLogin, function(req, res,next){
 
   new_course.save(function(err, course){
     if(err) return next(err);
+    res.location('/')
     res.status(201);
-    res.json(course);
+    res.json()
   });
 });
 
@@ -99,7 +102,7 @@ router.put("/courses/:courseId", mid.requiresLogin, function(req, res,next){
               console.log("****************** course_to_update: " + JSON.stringify(course_to_update))
               course_to_update.update(req.body, function(err, updated_course){
                 if(err) return next(err);
-                res.json(updated_course);
+                res.json();
               });
 
           }
